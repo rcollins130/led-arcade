@@ -1,0 +1,81 @@
+DOCUMENTATION
+Robert Collins '20
+Harvard, Stoughton Hall
+12 / 7 / 16
+CS50 Final Project: LED Arcade
+
+LED Arcade is a suite of 3 games designed to be played on a high-density addressable LED strip, powered using an Arduino. The included code is configured to use a 1 meter WS2812B-type strip containing 144 leds. This documentation file will go over hardware setup, code compilation and upload, game details, and joystick configuration.
+
+HARDWARE
+This project requires 3 basic components: an addressable LED strip, an Arduino or Arduino clone, and a 2 axis joystick with an included button. To protect the components, it's recommended to use separate power supplies for the Arduino and LED strip. The WS2812B strip I used requires a 5v 10a power supply to safely power all LEDs at once. The Arduino can be powered either with a 9v 1a power supply, or with a USB cable.
+
+Pin Configuration:
+The data pin locations are defined in globals.h
+Joystick:
+SW (Green) - Digital pin 2
+VRy (Yellow) - Analog pin A1
+VRx (Orange) - Analog pin A0
++5v (Red) - Any 5v pin
+GND (Brown) - Any ground pin
+
+See JOYSTICK CONFIGURATION at the end of this document for how to indicate to the Arduino the orientation of the joystick.
+
+Strip:
+Data (Green) - Digital pin 6
+Ground (White) - Any ground pin
+
+To avoid damage to components, always connect ground pins first when assembling the components, and disconnect them last during disassembly.
+
+SOFTWARE
+This software is compiled and uploaded to the Arduino using the Arduino software suite. There are 7 required files: 1 .h header file, 2 .ino general use files, and 4 .ino scene-specific files. During compilation, the general use and scene specific files are concatenated into a single C++ file before being compiled. To compile the code and upload it to the Arduino, first open up all seven files with the Arduino software suite. Then connect the Arduino to the computer using a USB cable. Then, simply click the "Upload" button, marked with an arrow. If this fails, ensure that the suite has identified the correct port and board by selecting Tools->Port->/dev/cu.usbmodem1411 (on a Mac) and Tools->Board->Arduino/Genuino Uno (or whatever board is being used) in the menu bar. Once the suite is finished uploading, it will indicate "Done Uploading" above the console. The software has then been successfully uploaded to the Arduino, and it can be run unconnected to a computer.
+
+GAMES
+On startup, the LED strip will display a menu containing the three games: Gun Game, Pong, and React. Move the joystick sideways to move the selector bars to a particular game. Move it upwards to select the difficulty level, which is indicated by the color of the selector bars. Green indicates easy, while Red indicates hard. Press on the joystick to begin playing a game. If the joystick's movements are reversed or rotated, ensure that the joystick has been properly configured (see end of document).
+
+Gun Game
+In Gun Game the player controls a blue dot which can be moved along the strip by moving the joystick sideways. The objective of the game is to destroy as many enemy dots as possible using the blue dot's "gun", activated by pressing on the joystick. Four different types of enemies will appear, from both sides of the strip: Ordinary red dots, fast red blinking dots, slower orange dots, which take 3 shots to destroy, and even slower yellow dots, which take 5 shots to destroy. As the game progresses, more and more enemies will appear, and the chance of "special" enemies appearing will increase. The game ends once the blue dot is touched by an enemy dot. In higher difficulties, enemies appear more frequently.
+
+Pong
+In Pong the player controls a pulsing, color changing dot which can be moved along the strip by moving the joystick sideways. The color is changed by moving the joystick up and down. The objective of the game is to destroy the red wall using the ball, which bounces between the player and the wall. To hit the ball towards the wall, the player must match the color of the ball, and let the ball bounce off the dot. If the player misses the ball, and the ball reaches the opposite side of the strip, the game is lost. In higher difficulties, the ball moves faster and the player must match the color more accurately.
+
+React
+React involves a green dot which bounces between sides of the strip, and a blue "base" located in the middle of the strip. To play the game, the player must press on the joystick when the green dot is within the blue base. The base then shrinks by 2 LEDs, and the game continues. Each time the player hits the left wall (the side of the strip with control wires) the size of the base increases by 1 LED. Once the base is less than three LEDs wide, the player has won. If the player presses the joystick while the green dot is outside the base, the game is lost. In higher difficulties, the green dot moves faster.
+
+JOYSTICK CONFIGURATION
+The LED Arcade is designed to be able to be played in any orientation- vertically, horizontally, upside down, in a loop- whatever the player can imagine. This is enabled by adjusting the WIRE_DIRECTION constant, found on line 44 of globals.h. This constant takes the values 0-3. The default configuration, 0, has the game being played with a horizontal LED strip, with the control wires pointing left, and with a joystick flat on a table, with it's wires pointing towards the strip. The following diagram shows the correct WIRE_DIRECTION values for joystick orientations with a left-facing strip. U, R, D, L represent Up, Right, Down, and Left.
+   _______________________________________________________
+===-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-
+   ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+   |||||               |‾‾U‾‾|
+  |‾‾U‾‾|   |‾‾U‾‾|=   |L   R|  =|‾‾U‾‾|
+  |L   R|   |L   R|-   |__D__|  -|L   R|
+  |__D__|   |__D__|=    |||||   =|__D__|
+     0         1          2         3
+                WIRE_DIRECTION
+
+To orient the strip to the right, use this diagram:
+  _______________________________________________________
+  -0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-===
+  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+     |||||               |‾‾U‾‾|
+    |‾‾U‾‾|   |‾‾U‾‾|=   |L   R|  =|‾‾U‾‾|
+    |L   R|   |L   R|-   |__D__|  -|L   R|
+    |__D__|   |__D__|=    |||||   =|__D__|
+       2         3          0         1
+               WIRE_DIRECTION
+
+Vertical orientations follow the same logic. This diagram is for a strip oriented vertically, with control wires pointing down.
+|0|     |||||               |‾‾U‾‾|
+|0|    |‾‾U‾‾|   |‾‾U‾‾|=   |L   R|  =|‾‾U‾‾|
+|0|    |L   R|   |L   R|-   |__D__|  -|L   R|
+|0|    |__D__|   |__D__|=    |||||   =|__D__|
+|0|       1         2          3         0
+|||             WIRE_ORIENTATION
+
+This final diagram shows the values for a vertical strip with control wires pointing up
+|||     |||||               |‾‾U‾‾|
+|0|    |‾‾U‾‾|   |‾‾U‾‾|=   |L   R|  =|‾‾U‾‾|
+|0|    |L   R|   |L   R|-   |__D__|  -|L   R|
+|0|    |__D__|   |__D__|=    |||||   =|__D__|
+|0|       3         0          1         2
+|0|             WIRE_ORIENTATION
